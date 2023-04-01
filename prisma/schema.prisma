@@ -9,3 +9,144 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id                 Int                  @id @default(autoincrement())
+  nickname           String               @unique @db.VarChar(32)
+  email              String               @unique @db.VarChar(255)
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  Session            Session[]
+  CommunityHierarchy CommunityHierarchy[]
+  Post               Post[]
+  Like               Like[]
+  Comment            Comment[]
+  Save               Save[]
+  UserBook           UserBook[]
+}
+
+model Session {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  User      User     @relation(fields: [userId], references: [id])
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Book {
+  id            Int             @id @default(autoincrement())
+  title         String
+  author        String
+  releaseAt     DateTime
+  pages         Int
+  isbn          String
+  language      String
+  cover         String
+  description   String
+  rating        Int
+  Post          Post[]
+  CommunityBook CommunityBook[]
+  UserBook      UserBook[]
+}
+
+model UserBook {
+  id       Int        @id @default(autoincrement())
+  userId   Int
+  User     User       @relation(fields: [userId], references: [id])
+  bookId   Int
+  Book     Book       @relation(fields: [bookId], references: [id])
+  statusId Int
+  Status   StatusBook @relation(fields: [statusId], references: [id])
+}
+
+model Community {
+  id                 Int                  @id @default(autoincrement())
+  name               String
+  description        String
+  logoImg            String
+  bgImg              String
+  typeId             Int
+  Type               CommunityType        @relation(fields: [typeId], references: [id])
+  CommunityHierarchy CommunityHierarchy[]
+  Post               Post[]
+  CommunityBook      CommunityBook[]
+}
+
+model CommunityBook {
+  id          Int        @id @default(autoincrement())
+  communityId Int
+  Community   Community  @relation(fields: [communityId], references: [id])
+  bookId      Int
+  Book        Book       @relation(fields: [bookId], references: [id])
+  statusId    Int
+  Status      StatusBook @relation(fields: [statusId], references: [id])
+}
+
+model StatusBook {
+  id            Int             @id @default(autoincrement())
+  status        String
+  CommunityBook CommunityBook[]
+  UserBook      UserBook[]
+}
+
+model CommunityType {
+  id        Int         @id @default(autoincrement())
+  name      String
+  Community Community[]
+}
+
+model CommunityHierarchy {
+  id                     Int                    @id @default(autoincrement())
+  userId                 Int
+  User                   User                   @relation(fields: [userId], references: [id])
+  communityId            Int
+  Community              Community              @relation(fields: [communityId], references: [id])
+  typeId                 Int
+  CommunityHierarchyType CommunityHierarchyType @relation(fields: [typeId], references: [id])
+}
+
+model CommunityHierarchyType {
+  id                 Int                  @id @default(autoincrement())
+  name               String
+  CommunityHierarchy CommunityHierarchy[]
+}
+
+model Post {
+  id          Int       @id @default(autoincrement())
+  communityId Int
+  Community   Community @relation(fields: [communityId], references: [id])
+  userId      Int
+  User        User      @relation(fields: [userId], references: [id])
+  bookId      Int
+  Book        Book      @relation(fields: [bookId], references: [id])
+  content     String
+  Like        Like[]
+  Comment     Comment[]
+  Save        Save[]
+}
+
+model Like {
+  id     Int  @id @default(autoincrement())
+  userId Int
+  User   User @relation(fields: [userId], references: [id])
+  postId Int
+  Post   Post @relation(fields: [postId], references: [id])
+}
+
+model Comment {
+  id      Int    @id @default(autoincrement())
+  userId  Int
+  User    User   @relation(fields: [userId], references: [id])
+  postId  Int
+  Post    Post   @relation(fields: [postId], references: [id])
+  content String
+}
+
+model Save {
+  id     Int  @id @default(autoincrement())
+  userId Int
+  User   User @relation(fields: [userId], references: [id])
+  postId Int
+  Post   Post @relation(fields: [postId], references: [id])
+}
