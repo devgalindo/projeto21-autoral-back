@@ -1,6 +1,9 @@
 import express from "express";
+import "express-async-errors";
 import cors from "cors";
-import { connectDb, disconnectDb } from "./config/database";
+import { connectDb, disconnectDb, loadEnvs } from "./config";
+
+loadEnvs();
 
 const app = express();
 
