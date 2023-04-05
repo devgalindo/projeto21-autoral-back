@@ -1,4 +1,4 @@
-import loadEnvs from "./envs";
-import { connectDb, disconnectDb } from "./database";
+import loadEnvs from "../config/envs";
+import { connectDb, disconnectDb } from "../config/database";
 
 export { loadEnvs, connectDb, disconnectDb };
